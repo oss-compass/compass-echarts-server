@@ -1,0 +1,28 @@
+{
+  "name": "echarts-server",
+  "description": "Echarts server side render by node canvas, generate chart image by Echarts.",
+  "private": true,
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oss-compass/compass-echarts-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/oss-compass/compass-echarts-server/issues"
+  },
+  "homepage": "https://github.com/oss-compass/compass-echarts-server#readme",
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "canvas": "^2.11.2",
+    "echarts": "^5.4.3"
+  },
+  "devDependencies": {
+    "vite": "^4.4.5"
+  }
+}

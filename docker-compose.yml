@@ -1,0 +1,10 @@
+version: '3'
+services:
+  echarts-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8084:8081"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
