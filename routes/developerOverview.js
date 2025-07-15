@@ -32,7 +32,7 @@ function generateDeveloperOverviewOption(data) {
             {
                 type: 'group',
                 left: 50,
-                top: 80,
+                top: 106,
                 children: [
                     // Commits 行
                     {
@@ -87,7 +87,7 @@ function generateDeveloperOverviewOption(data) {
                     // PRs 行
                     {
                         type: 'group',
-                        top: 70,
+                        top: 60,
                         children: [
                             // 图标背景圆形
                             {
@@ -137,7 +137,7 @@ function generateDeveloperOverviewOption(data) {
                     // Issues 行
                     {
                         type: 'group',
-                        top: 140,
+                        top: 120,
                         children: [
                             // 图标背景圆形
                             {
@@ -187,7 +187,7 @@ function generateDeveloperOverviewOption(data) {
                     // Code Reviews 行
                     {
                         type: 'group',
-                        top: 210,
+                        top: 180,
                         children: [
                             // 图标背景圆形
                             {
@@ -237,7 +237,7 @@ function generateDeveloperOverviewOption(data) {
                     // Contributed to 行
                     {
                         type: 'group',
-                        top: 280,
+                        top: 240,
                         children: [
                             // 图标背景圆形
                             {
@@ -293,7 +293,7 @@ function generateDeveloperOverviewOption(data) {
             {
                 type: 'pie',
                 center: ['75%', '50%'],
-                radius: ['45%', '55%'],
+                radius: ['36%', '42%'],
                 clockwise: false,
                 avoidLabelOverlap: false,
                 itemStyle: {
@@ -364,7 +364,7 @@ function handleDeveloperOverview(config, response) {
         // 渲染图表
         echarts({
             option: chartOption,
-            width: config.width || 600,
+            width: config.width || 700,
             height: config.height || 400,
             type: config.type || 'svg'
         }, response);
