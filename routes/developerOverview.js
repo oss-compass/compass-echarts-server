@@ -13,7 +13,7 @@ const echarts = require('../index.js');
  * @param {string} data.level.rank - 排名百分比（如 20%）
  * @returns {Object} ECharts配置对象
  */
-function generateDeveloperOverviewOption(data) {
+function generateDeveloperOverviewOption(data, contributor) {
     const { commit_count, pr_count, issue_count, code_review_count, contributed_to_count, level } = data;
 
     // SVG图标定义（转换为data URI）
@@ -25,275 +25,312 @@ function generateDeveloperOverviewOption(data) {
         contributedTo: 'data:image/svg+xml;base64,' + Buffer.from('<svg stroke="#ff9d36" fill="#ff9d36" stroke-width="0" viewBox="0 0 24 24" height="18" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M3 2.75A2.75 2.75 0 0 1 5.75 0h14.5a.75.75 0 0 1 .75.75v20.5a.75.75 0 0 1-.75.75h-6a.75.75 0 0 1 0-1.5h5.25v-4H6A1.5 1.5 0 0 0 4.5 18v.75c0 .716.43 1.334 1.05 1.605a.75.75 0 0 1-.6 1.374A3.251 3.251 0 0 1 3 18.75ZM19.5 1.5H5.75c-.69 0-1.25.56-1.25 1.25v12.651A2.989 2.989 0 0 1 6 15h13.5Z"></path><path d="M7 18.25a.25.25 0 0 1 .25-.25h5a.25.25 0 0 1 .25.25v5.01a.25.25 0 0 1-.397.201l-2.206-1.604a.25.25 0 0 0-.294 0L7.397 23.46a.25.25 0 0 1-.397-.2v-5.01Z"></path></svg>').toString('base64')
     };
 
-    return {
-        backgroundColor: '#ffffff',
-        graphic: [
-            // 左侧统计信息容器
+    // 构建graphic数组
+    const graphics = [];
+
+    // 添加卡片边框
+    graphics.push({
+        type: 'rect',
+        left: 1,
+        top: 1,
+        shape: {
+            width: 548,  // 边框宽度与卡片一致
+            height: 248,
+            r: [8, 8, 8, 8]  // 使用数组形式定义圆角半径
+        },
+        style: {
+            fill: 'transparent',
+            stroke: '#d1d5db',  // 更明显的边框颜色
+            lineWidth: 1        // 边框宽度
+        },
+        z: 100  // 确保边框在最上层
+    });
+
+
+    // 如果contributor不为空，添加标题
+    if (contributor && contributor.trim() !== '') {
+        graphics.push({
+            type: 'text',
+            left: '8%',
+            top: '5%',
+            style: {
+                text: `${contributor}'s Contribution Overview`,
+                fontSize: '21px',
+                fontWeight: 'bold',
+                fill: '#1f2937',
+            }
+        });
+    }
+
+    // 添加左侧统计信息容器
+    graphics.push({
+        type: 'group',
+        left: '8%',
+        top: contributor && contributor.trim() !== '' ? '25%' : '19%',
+        children: [
+            // Commits 行
             {
                 type: 'group',
-                left: 50,
-                top: 106,
+                top: 0,
                 children: [
-                    // Commits 行
+                    // 图标背景圆形
                     {
-                        type: 'group',
-                        top: 0,
-                        children: [
-                            // 图标背景圆形
-                            {
-                                type: 'circle',
-                                shape: { cx: 20, cy: 20, r: 20 },
-                                style: { fill: '#ff9d36', opacity: 0.1 }
-                            },
-                            // Commit 图标
-                            {
-                                type: 'image',
-                                style: {
-                                    image: icons.commits,
-                                    x: 10,
-                                    y: 10,
-                                    width: 20,
-                                    height: 20
-                                }
-                            },
-                            // 标签文本
-                            {
-                                type: 'text',
-                                style: {
-                                    text: 'Commits',
-                                    x: 55,
-                                    y: 10,
-                                    fontSize: '24px',
-                                    fill: '#374151',
-                                    fontWeight: '500',
-                                    textBaseline: 'middle'
-                                }
-                            },
-                            // 数值文本
-                            {
-                                type: 'text',
-                                style: {
-                                    text: commit_count.toString(),
-                                    x: 320,
-                                    y: 10,
-                                    font: 'bold 24px Arial',
-                                    fill: '#1f2937',
-                                    textAlign: 'right',
-                                    textBaseline: 'middle'
-                                }
-                            }
-                        ]
+                        type: 'circle',
+                        shape: { cx: 12, cy: 12, r: 12 },
+                        style: { fill: '#ff9d36', opacity: 0.1 }
                     },
-                    // PRs 行
+                    // Commit 图标
                     {
-                        type: 'group',
-                        top: 60,
-                        children: [
-                            // 图标背景圆形
-                            {
-                                type: 'circle',
-                                shape: { cx: 20, cy: 20, r: 20 },
-                                style: { fill: '#ff9d36', opacity: 0.1 }
-                            },
-                            // PR 图标
-                            {
-                                type: 'image',
-                                style: {
-                                    image: icons.prs,
-                                    x: 10,
-                                    y: 10,
-                                    width: 20,
-                                    height: 20
-                                }
-                            },
-                            // 标签文本
-                            {
-                                type: 'text',
-                                style: {
-                                    text: 'PRs',
-                                    x: 55,
-                                    y: 10,
-                                    fontSize: '24px',
-                                    fill: '#374151',
-                                    fontWeight: '500',
-                                    textBaseline: 'middle'
-                                }
-                            },
-                            // 数值文本
-                            {
-                                type: 'text',
-                                style: {
-                                    text: pr_count.toString(),
-                                    x: 320,
-                                    y: 10,
-                                    font: 'bold 24px Arial',
-                                    fill: '#1f2937',
-                                    textAlign: 'right',
-                                    textBaseline: 'middle'
-                                }
-                            }
-                        ]
+                        type: 'image',
+                        style: {
+                            image: icons.commits,
+                            x: 4,
+                            y: 4,
+                            width: 17,
+                            height: 17
+                        }
                     },
-                    // Issues 行
+                    // 标签文本
                     {
-                        type: 'group',
-                        top: 120,
-                        children: [
-                            // 图标背景圆形
-                            {
-                                type: 'circle',
-                                shape: { cx: 20, cy: 20, r: 20 },
-                                style: { fill: '#ff9d36', opacity: 0.1 }
-                            },
-                            // Issue 图标
-                            {
-                                type: 'image',
-                                style: {
-                                    image: icons.issues,
-                                    x: 10,
-                                    y: 10,
-                                    width: 20,
-                                    height: 20
-                                }
-                            },
-                            // 标签文本
-                            {
-                                type: 'text',
-                                style: {
-                                    text: 'Issues',
-                                    x: 55,
-                                    y: 10,
-                                    fontSize: '24px',
-                                    fill: '#374151',
-                                    fontWeight: '500',
-                                    textBaseline: 'middle'
-                                }
-                            },
-                            // 数值文本
-                            {
-                                type: 'text',
-                                style: {
-                                    text: issue_count.toString(),
-                                    x: 320,
-                                    y: 10,
-                                    font: 'bold 24px Arial',
-                                    fill: '#1f2937',
-                                    textAlign: 'right',
-                                    textBaseline: 'middle'
-                                }
-                            }
-                        ]
+                        type: 'text',
+                        style: {
+                            text: 'Commits',
+                            x: 35,
+                            y: 4,
+                            fontSize: '18px',
+                            fill: '#374151',
+                            fontWeight: '500',
+                            textBaseline: 'middle'
+                        }
                     },
-                    // Code Reviews 行
+                    // 数值文本
                     {
-                        type: 'group',
-                        top: 180,
-                        children: [
-                            // 图标背景圆形
-                            {
-                                type: 'circle',
-                                shape: { cx: 20, cy: 20, r: 20 },
-                                style: { fill: '#ff9d36', opacity: 0.1 }
-                            },
-                            // Code Reviews 图标
-                            {
-                                type: 'image',
-                                style: {
-                                    image: icons.codeReviews,
-                                    x: 10,
-                                    y: 10,
-                                    width: 20,
-                                    height: 20
-                                }
-                            },
-                            // 标签文本
-                            {
-                                type: 'text',
-                                style: {
-                                    text: 'Code Reviews',
-                                    x: 55,
-                                    y: 10,
-                                    fontSize: '24px',
-                                    fill: '#374151',
-                                    fontWeight: '500',
-                                    textBaseline: 'middle'
-                                }
-                            },
-                            // 数值文本
-                            {
-                                type: 'text',
-                                style: {
-                                    text: code_review_count.toString(),
-                                    x: 320,
-                                    y: 10,
-                                    font: 'bold 24px Arial',
-                                    fill: '#1f2937',
-                                    textAlign: 'right',
-                                    textBaseline: 'middle'
-                                }
-                            }
-                        ]
-                    },
-                    // Contributed to 行
-                    {
-                        type: 'group',
-                        top: 240,
-                        children: [
-                            // 图标背景圆形
-                            {
-                                type: 'circle',
-                                shape: { cx: 20, cy: 20, r: 20 },
-                                style: { fill: '#ff9d36', opacity: 0.1 }
-                            },
-                            // Contributed to 图标
-                            {
-                                type: 'image',
-                                style: {
-                                    image: icons.contributedTo,
-                                    x: 10,
-                                    y: 10,
-                                    width: 20,
-                                    height: 20
-                                }
-                            },
-                            // 标签文本
-                            {
-                                type: 'text',
-                                style: {
-                                    text: 'Contributed to',
-                                    x: 55,
-                                    y: 10,
-                                    fontSize: '24px',
-                                    fill: '#374151',
-                                    fontWeight: '500',
-                                    textBaseline: 'middle'
-                                }
-                            },
-                            // 数值文本
-                            {
-                                type: 'text',
-                                style: {
-                                    text: contributed_to_count.toString(),
-                                    x: 320,
-                                    y: 10,
-                                    font: 'bold 24px Arial',
-                                    fill: '#1f2937',
-                                    textAlign: 'right',
-                                    textBaseline: 'middle'
-                                }
-                            }
-                        ]
+                        type: 'text',
+                        style: {
+                            text: commit_count.toString(),
+                            x: 260,
+                            y: 4,
+                            font: 'bold 18px Arial',
+                            fill: '#1f2937',
+                            textAlign: 'right',
+                            textBaseline: 'middle'
+                        }
                     }
                 ]
             },
+            // PRs 行
+            {
+                type: 'group',
+                top: 30,
+                children: [
+                    // 图标背景圆形
+                    {
+                        type: 'circle',
+                        shape: { cx: 12, cy: 12, r: 12 },
+                        style: { fill: '#ff9d36', opacity: 0.1 }
+                    },
+                    // PR 图标
+                    {
+                        type: 'image',
+                        style: {
+                            image: icons.prs,
+                            x: 4,
+                            y: 4,
+                            width: 17,
+                            height: 17
+                        }
+                    },
+                    // 标签文本
+                    {
+                        type: 'text',
+                        style: {
+                            text: 'PRs',
+                            x: 35,
+                            y: 4,
+                            fontSize: '18px',
+                            fill: '#374151',
+                            fontWeight: '500',
+                            textBaseline: 'middle'
+                        }
+                    },
+                    // 数值文本
+                    {
+                        type: 'text',
+                        style: {
+                            text: pr_count.toString(),
+                            x: 260,
+                            y: 4,
+                            font: 'bold 18px Arial',
+                            fill: '#1f2937',
+                            textAlign: 'right',
+                            textBaseline: 'middle'
+                        }
+                    }
+                ]
+            },
+            // Issues 行
+            {
+                type: 'group',
+                top: 60,
+                children: [
+                    // 图标背景圆形
+                    {
+                        type: 'circle',
+                        shape: { cx: 12, cy: 12, r: 12 },
+                        style: { fill: '#ff9d36', opacity: 0.1 }
+                    },
+                    // Issue 图标
+                    {
+                        type: 'image',
+                        style: {
+                            image: icons.issues,
+                            x: 4,
+                            y: 4,
+                            width: 17,
+                            height: 17
+                        }
+                    },
+                    // 标签文本
+                    {
+                        type: 'text',
+                        style: {
+                            text: 'Issues',
+                            x: 35,
+                            y: 4,
+                            fontSize: '18px',
+                            fill: '#374151',
+                            fontWeight: '500',
+                            textBaseline: 'middle'
+                        }
+                    },
+                    // 数值文本
+                    {
+                        type: 'text',
+                        style: {
+                            text: issue_count.toString(),
+                            x: 260,
+                            y: 4,
+                            font: 'bold 18px Arial',
+                            fill: '#1f2937',
+                            textAlign: 'right',
+                            textBaseline: 'middle'
+                        }
+                    }
+                ]
+            },
+            // Code Reviews 行
+            {
+                type: 'group',
+                top: 90,
+                children: [
+                    // 图标背景圆形
+                    {
+                        type: 'circle',
+                        shape: { cx: 12, cy: 12, r: 12 },
+                        style: { fill: '#ff9d36', opacity: 0.1 }
+                    },
+                    // Code Reviews 图标
+                    {
+                        type: 'image',
+                        style: {
+                            image: icons.codeReviews,
+                            x: 4,
+                            y: 4,
+                            width: 17,
+                            height: 17
+                        }
+                    },
+                    // 标签文本
+                    {
+                        type: 'text',
+                        style: {
+                            text: 'Code Reviews',
+                            x: 35,
+                            y: 4,
+                            fontSize: '18px',
+                            fill: '#374151',
+                            fontWeight: '500',
+                            textBaseline: 'middle'
+                        }
+                    },
+                    // 数值文本
+                    {
+                        type: 'text',
+                        style: {
+                            text: code_review_count.toString(),
+                            x: 260,
+                            y: 4,
+                            font: 'bold 18px Arial',
+                            fill: '#1f2937',
+                            textAlign: 'right',
+                            textBaseline: 'middle'
+                        }
+                    }
+                ]
+            },
+            // Contributed to 行
+            {
+                type: 'group',
+                top: 120,
+                children: [
+                    // 图标背景圆形
+                    {
+                        type: 'circle',
+                        shape: { cx: 12, cy: 12, r: 12 },
+                        style: { fill: '#ff9d36', opacity: 0.1 }
+                    },
+                    // Contributed to 图标
+                    {
+                        type: 'image',
+                        style: {
+                            image: icons.contributedTo,
+                            x: 4,
+                            y: 4,
+                            width: 17,
+                            height: 17
+                        }
+                    },
+                    // 标签文本
+                    {
+                        type: 'text',
+                        style: {
+                            text: 'Contributed to',
+                            x: 35,
+                            y: 4,
+                            fontSize: '18px',
+                            fill: '#374151',
+                            fontWeight: '500',
+                            textBaseline: 'middle'
+                        }
+                    },
+                    // 数值文本
+                    {
+                        type: 'text',
+                        style: {
+                            text: contributed_to_count.toString(),
+                            x: 260,
+                            y: 4,
+                            font: 'bold 18px Arial',
+                            fill: '#1f2937',
+                            textAlign: 'right',
+                            textBaseline: 'middle'
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+    );
 
-        ],
+    return {
+        backgroundColor: '#fffefe',
+        graphic: graphics,
         // 右侧圆形评级
         series: [
             {
                 type: 'pie',
-                center: ['75%', '50%'],
-                radius: ['36%', '42%'],
+                center: ['80%', '57%'],
+                radius: ['41%', '46%'],
                 clockwise: false,
                 avoidLabelOverlap: false,
                 itemStyle: {
@@ -322,6 +359,7 @@ function generateDeveloperOverviewOption(data) {
                         value: parseInt(level.rank) || 20,
                         itemStyle: {
                             color: '#e2e8f0',
+                            borderRadius: 10
                         }
                     }
                 ]
@@ -329,7 +367,7 @@ function generateDeveloperOverviewOption(data) {
             // 中心文本系列（用于精确显示评级文本）
             {
                 type: 'pie',
-                center: ['75%', '50%'],
+                center: ['80%', '57%'],
                 radius: [0, 0],
                 silent: true,
                 label: {
@@ -359,13 +397,13 @@ function handleDeveloperOverview(config, response) {
 
     try {
         // 生成开发者概览图表配置
-        const chartOption = generateDeveloperOverviewOption(config.option);
+        const chartOption = generateDeveloperOverviewOption(config.option, config.contributor);
 
         // 渲染图表
         echarts({
             option: chartOption,
-            width: config.width || 700,
-            height: config.height || 400,
+            width: 550,
+            height: 250,
             type: config.type || 'svg'
         }, response);
     } catch (error) {
@@ -379,4 +417,4 @@ module.exports = {
     path: '/developer_overview',
     handler: handleDeveloperOverview,
     generateDeveloperOverviewOption
-}; 
+};
