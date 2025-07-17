@@ -34,8 +34,8 @@ function generateDeveloperOverviewOption(data, contributor) {
         left: 1,
         top: 1,
         shape: {
-            width: 548,  // 边框宽度与卡片一致
-            height: 248,
+            width: 518,  // 边框宽度与卡片一致
+            height: 218,
             r: [8, 8, 8, 8]  // 使用数组形式定义圆角半径
         },
         style: {
@@ -51,8 +51,8 @@ function generateDeveloperOverviewOption(data, contributor) {
     if (contributor && contributor.trim() !== '') {
         graphics.push({
             type: 'text',
-            left: '8%',
-            top: '5%',
+            left: '9%',
+            top: '6%',
             style: {
                 text: `${contributor}'s Contribution Overview`,
                 fontSize: '21px',
@@ -402,8 +402,8 @@ function handleDeveloperOverview(config, response) {
         // 渲染图表
         echarts({
             option: chartOption,
-            width: 550,
-            height: 250,
+            width: 520,
+            height: 220,
             type: config.type || 'svg'
         }, response);
     } catch (error) {
