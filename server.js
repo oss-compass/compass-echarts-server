@@ -5,6 +5,7 @@ const router = require('./routes');
 
 function processConfig(request, response, callback) {
   let queryData = '';
+  let rejected = false;
   if (typeof callback !== 'function') {
     return null;
   }
@@ -18,12 +19,20 @@ function processConfig(request, response, callback) {
     callback();
   } else {
     request.on('data', function(data) {
+      if (rejected) {
+        return;
+      }
       queryData += data;
       if (queryData.length > 1e6) {
+        rejected = true;
+        response.statusCode = 413;
         response.end('request body too large');
       }
     });
     request.on('end', function() {
+      if (rejected) {
+        return;
+      }
       request.config = queryData;
       callback();
     });
